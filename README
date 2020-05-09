@@ -1,0 +1,25 @@
+=====================================================================
+
+ML20 SIGN OF LIFE SYNTHESIZER V0.1
+CALVIN GIDDENS
+
+1) build tables
+ $ ./build_tables.sh
+ $ ./generate_tables
+
+2) build synth
+ $ ./build_synth
+   or
+ $ ./build_optimized (optimizes for code size)
+
+3) run synth
+ $ ./synth
+
+4) rendered audio is in output.raw
+   - Audio is 16 bit, mono, little-endian, 48kHz
+   - Best viewed in Audacity. File->Import->Raw Data...
+
+To edit / add synthesizer voices, look at main() in synth.c
+
+=====================================================================
+
