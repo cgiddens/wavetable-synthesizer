@@ -32,69 +32,79 @@ int main() {
 
     // Create voices
     Voice voice;
-    voice.table = &triangle_table;
-    voice.freq = 220;
-    voice.phasor = 0; // Phase accumulator / initial phase
-    voice.gain = 0.8;
-    voice.next_entry = NULL; // For linked mixer list, init to NULL
+    voice.table       = &triangle_table;
+    voice.freq        = 900;
+    voice.phasor      = 0; // Phase accumulator / initial phase
+    voice.gain        = 0.8;
+    voice.next_entry  = NULL; // For linked mixer list, init to NULL
 
-    Voice voice2;
-    voice2.table = &triangle_table;
-    voice2.freq = 440;
-    voice2.phasor = 0;
-    voice2.gain = 0.8;
-    voice2.next_entry = NULL;
+    const float td    = 0.08; // pulse duration -- 80ms
+    const float tr    = 0.01; // attack time -- 10ms
+    const float tf    = 0.03; // decay time -- 30ms
+    const float x     = 0.05; // shortest interburst interval -- 50ms
+    const float s     = td - tr - tf; // sustain -- 40ms
 
-    Voice voice3;
-    voice3.table = &triangle_table;
-    voice3.freq = 659.255;
-    voice3.phasor = 0;
-    voice3.gain = 0.8;
-    voice3.next_entry = NULL;
+    Voice voice2      = voice;
+    Voice voice3      = voice;
+    Voice voice4      = voice;
+    Voice voice5      = voice;
+    Voice voice6      = voice;
+    Voice voice7      = voice;
+    Voice voice8      = voice;
+    Voice voice9      = voice;
+    Voice voice10     = voice;
 
     // Create envelopes
     Envelope envelope;
     envelope.delay = 0;
-    envelope.attack = .096458;
-    envelope.decay = .041333;
-    envelope.sustain = 0;
-    envelope.sustain_level = .2;
-    envelope.release = .011813;
+    envelope.attack = tr;
+    envelope.decay = 0;
+    envelope.sustain = s;
+    envelope.sustain_level = 1;
+    envelope.release = tf;
 
-    Envelope envelope2;
-    envelope2.delay = 0.1496;
-    envelope2.attack = .025583;
-    envelope2.decay = .025000;
-    envelope2.sustain = .013771;
-    envelope2.sustain_level = 0.10;
-    envelope2.release = .031500;
-
-    Envelope envelope3;
-    envelope3.delay = 0.2455;
-    envelope3.attack = .003938;
-    envelope3.decay = .070854;
-    envelope3.sustain = 1.033458;
-    envelope3.sustain_level = 0.05;
-    envelope3.release = .149604;
+    Envelope envelope2 = envelope;
+    envelope2.delay = td + x;
+    Envelope envelope3 = envelope;
+    envelope3.delay = envelope2.delay + td + x;
+    Envelope envelope4 = envelope;
+    envelope4.delay = envelope3.delay + td + (2*x) + td;
+    Envelope envelope5 = envelope;
+    envelope5.delay = envelope4.delay + td + x;
+    Envelope envelope6 = envelope;
+    envelope6.delay = envelope5.delay + td + 0.55;
+    Envelope envelope7 = envelope;
+    envelope7.delay = envelope6.delay + td + x;
+    Envelope envelope8 = envelope;
+    envelope8.delay = envelope7.delay + td + x;
+    Envelope envelope9 = envelope;
+    envelope9.delay = envelope8.delay + td + (2*x) + td;
+    Envelope envelope10 = envelope;
+    envelope10.delay = envelope9.delay + td + x;
 
     // Create LFO
-    LFO lfo;
-    lfo.table = &sine_table;
-    lfo.envelope = NULL; // Not implemented yet
-    lfo.assignment = FREQ;
-    lfo.freq = 2;
-    lfo.phasor = 0;
-    lfo.gain = 0.001; // NOTE: this is already an aggressive pitch gain. Need to figure out scaling
+    // LFO lfo; // no LFO needed
+    // lfo.table = &sine_table;
+    // lfo.envelope = NULL; // Not implemented yet
+    // lfo.assignment = FREQ;
+    // lfo.freq = 2;
+    // lfo.phasor = 0;
+    // lfo.gain = 0.001; // NOTE: this is already an aggressive pitch gain. Need to figure out scaling
 
     // Add envelopes to voices
     AddEnvelope(&voice, &envelope);
     AddEnvelope(&voice2, &envelope2);
     AddEnvelope(&voice3, &envelope3);
+    AddEnvelope(&voice4, &envelope4);
+    AddEnvelope(&voice5, &envelope5);
+    AddEnvelope(&voice6, &envelope6);
+    AddEnvelope(&voice7, &envelope7);
+    AddEnvelope(&voice8, &envelope8);
+    AddEnvelope(&voice9, &envelope9);
+    AddEnvelope(&voice10, &envelope10);
 
     // Add lfo to voices
-    AddLfo(&voice, &lfo);
-    AddLfo(&voice2, &lfo);
-    AddLfo(&voice3, &lfo);
+    // AddLfo(&voice, &lfo); // no LFO needed
 
     // Initialize mixer
     Mixer mixer;
@@ -103,9 +113,16 @@ int main() {
     // Add additional voice to mixer
     AddVoice(&mixer, &voice2);
     AddVoice(&mixer, &voice3);
+    AddVoice(&mixer, &voice4);
+    AddVoice(&mixer, &voice5);
+    AddVoice(&mixer, &voice6);
+    AddVoice(&mixer, &voice7);
+    AddVoice(&mixer, &voice8);
+    AddVoice(&mixer, &voice9);
+    AddVoice(&mixer, &voice10);
 
     // Render audio
-    GenerateSamples(&mixer, 48000, sine_table.length * 4 * 256); // Generate 256 cycles at table base freq (47Hz)
+    GenerateSamples(&mixer, 48000, 5 * 48000); // Generate a 5-second file
 
     return 0;
 }
