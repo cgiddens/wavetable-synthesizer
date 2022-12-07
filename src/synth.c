@@ -122,7 +122,7 @@ int main() {
     AddVoice(&mixer, &voice10);
 
     // Render audio
-    GenerateSamples(&mixer, 48000, 5 * 48000); // Generate a 5-second file
+    GenerateSamples(&mixer, 48000, 3 * 48000); // Generate a 3-second file
 
     return 0;
 }
